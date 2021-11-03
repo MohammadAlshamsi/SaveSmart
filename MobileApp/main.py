@@ -1,30 +1,23 @@
-from kivy.lang.builder import Builder
-from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition
+from kivy.lang import Builder
+from kivymd.uix.screen import Screen
 from kivymd.app import MDApp
-from kivymd.uix.list import MDList, ThreeLineListItem
-from kivy.metrics import dp
-from kivy.uix.scrollview import ScrollView
+from kivymd.uix.list import MDList, ThreeLineListItem, OneLineListItem
 from kasa import Discover
-from kasa import SmartPlug
-import asyncio
 from decimal import Decimal
+import asyncio
+from pathlib import Path
 
-sm = ScreenManager()
-
-
-class DeviceList(MDApp):
+class Test(MDApp):
     def build(self):
-        screen = Screen()
-        scroll = ScrollView()
-        list = MDList()
+        return Builder.load_file('app.kv')
+
+    def on_start(self):
         devices = asyncio.run(Discover.discover())
         for addr, dev in devices.items():
             asyncio.run(dev.update())
-            l = ThreeLineListItem(text=dev.alias, secondary_text="Current Power: %.2f" % Decimal(dev.emeter_realtime['power_mw'] / 10)  + " mW", tertiary_text="Current Runtime: " + dev.on_since.strftime("%H:%M:%S"))
-            list.add_widget(l)
-        scroll.add_widget(list)
-        screen.add_widget(scroll)
-        return screen
+            self.root.ids.devices.add_widget(
+            ThreeLineListItem(text=dev.alias,
+             secondary_text="Current Power: %.2f" % Decimal(dev.emeter_realtime['power_mw'] / 10)  + " mW",
+             tertiary_text="Current Runtime: " + dev.on_since.strftime("%H:%M:%S")))
             
-
-DeviceList().run()
+Test().run()

@@ -1,0 +1,48 @@
+
+<ListItemWithSwitch>:
+    IconLeftWidget:
+        icon: root.icon
+    RightSwitch:
+
+
+MDBoxLayout:
+    orientation:'vertical'
+    MDToolbar:
+        title: 'SaveSmart'
+        md_bg_color: .2, .2, .2, 1
+    MDBottomNavigation:
+        panel_color: .2, .2, .2, 1
+
+        MDBottomNavigationItem:
+            name: 'screen 4'
+            text: 'Dashboard'
+            GridLayout:
+                id: readings
+                col: 2
+
+        MDBottomNavigationItem:
+            name: 'screen 3'
+            text: 'Devices'
+            ScrollView:
+                MDSwitch:
+                    active: True
+
+        MDBottomNavigationItem:
+            name: 'screen 1'
+            text: 'Predictions'
+            ScrollView:
+                MDList:
+                    OneLineListItem:
+                        text: "Predictions go here!"
+
+
+        MDBottomNavigationItem:
+            name: 'screen 2'
+            text: 'Recommendations'
+
+            MDLabel:
+                text: 'Recommendations'
+                halign:'center'
+            
+
+
