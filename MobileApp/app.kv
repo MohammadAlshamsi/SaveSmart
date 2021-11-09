@@ -1,43 +1,45 @@
-MDBoxLayout:
-    orientation:'vertical'
-    MDToolbar:
-        title: 'SaveSmart'
-        md_bg_color: .2, .2, .2, 1
+<SM>:
+    Page1:
+        name: 'page1'
+    Page2:
+        name: 'page2'
+<Page1>:
+    mdlistid:mdlistid
     MDBottomNavigation:
-        panel_color: .2, .2, .2, 1
-
         MDBottomNavigationItem:
-            name: 'screen 4'
-            text: 'Dashboard'
-            GridLayout:
-                id: readings
-                col: 2
-
-        MDBottomNavigationItem:
-            name: 'screen 3'
+            name: 'devices'
             text: 'Devices'
-            MDSwitch:
-                on_active: app.check(*args)
-            ScrollView:
+            BoxLayout:
+                orientation: 'vertical'
+                Button:
+                    size_hint_y:.1
+                    text: 'Seek Devices'
+                    on_release: root.create_new_item()
                 MDList:
-                    id: devices
-
+                    size_hint_y:.9
+                    id: mdlistid
         MDBottomNavigationItem:
-            name: 'screen 1'
+            name: 'predictions'
             text: 'Predictions'
-            ScrollView:
+            BoxLayout:
+                orientation: 'vertical'
                 MDList:
+                    size_hint_y: .9
                     OneLineListItem:
-                        text: "Predictions go here!"
-
-
+                        text: 'Predictions go here!'
         MDBottomNavigationItem:
-            name: 'screen 2'
+            name: 'recommendations'
             text: 'Recommendations'
-
-            MDLabel:
-                text: 'Recommendations'
-                halign:'center'
-            
-
-
+            BoxLayout:
+                orientation: 'vertical'
+                MDList:
+                    size_hint_y: .9
+                    OneLineListItem:
+                        text: 'Recommendations go here!'
+<Page2>:
+    Button:
+        text: 'Go Page 1'
+        size_hint:None,None
+        size: 250,250
+        pos_hint: {'center_x':.5,'center_y':.5}
+        on_release: root.manager.current = 'page1'

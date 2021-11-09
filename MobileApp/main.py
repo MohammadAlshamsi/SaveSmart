@@ -1,23 +1,59 @@
+from kasa.discover import Discover
 from kivy.lang import Builder
-from kivymd.uix.screen import Screen
+from kivy.uix.screenmanager import Screen,ScreenManager
 from kivymd.app import MDApp
-from kivymd.uix.list import MDList, ThreeLineListItem, OneLineListItem
-from kasa import Discover
+from kivy.properties import ObjectProperty
+from kivymd.uix.list import OneLineAvatarIconListItem, ThreeLineListItem, TwoLineListItem
 from decimal import Decimal
+from pyemvue import PyEmVue, device
+import datetime
 import asyncio
-from pathlib import Path
+from enum import Enum
+class Scale(Enum):
+    SECOND = '1S'
+    MINUTE = '1MIN'
+    MINUTES_15 = '15MIN'
+    HOUR = '1H'
+    DAY = '1D'
+    WEEK = '1W'
+    MONTH = '1MON'
+    YEAR = '1Y'
 
-class Test(MDApp):
-    def build(self):
-        return Builder.load_file('app.kv')
+class Unit(Enum):
+    KWH = 'KilowattHours'
+    USD = 'Dollars'
+    AMPHOURS = 'AmpHours'
+    TREES = 'Trees'
+    GAS = 'GallonsOfGas'
+    DRIVEN = 'MilesDriven'
+    CARBON = 'Carbon'
 
-    def on_start(self):
-        devices = asyncio.run(Discover.discover())
-        for addr, dev in devices.items():
+vue = PyEmVue()
+vue.login(username='mymalshamsi@gmail.com', password='Moh123123!')
+
+class Page1(Screen):
+    mdlistid = ObjectProperty()
+    def create_new_item(self,*args):
+        plugs = asyncio.run(Discover.discover())
+        devices = vue.get_devices()
+        usage_over_time, start_time = vue.get_chart_usage(devices[1].channels[0], datetime.datetime.now(datetime.timezone.utc)-datetime.timedelta(minutes=5), datetime.datetime.now(datetime.timezone.utc), scale=Scale.MINUTE.value, unit=Unit.KWH.value)
+        for addr, dev in plugs.items():
             asyncio.run(dev.update())
-            self.root.ids.devices.add_widget(
-            ThreeLineListItem(text=dev.alias,
-             secondary_text="Current Power: %.2f" % Decimal(dev.emeter_realtime['power_mw'] / 10)  + " mW",
-             tertiary_text="Current Runtime: " + dev.on_since.strftime("%H:%M:%S")))
-            
-Test().run()
+            item = ThreeLineListItem(text=dev.alias, secondary_text= "Current Reading: {:.2f}".format(dev.emeter_realtime['power'] / 100) + " kW",tertiary_text= "IP Address: " + addr)
+            item.bind(on_release=self.change_page)
+            self.mdlistid.add_widget(item) 
+            item = TwoLineListItem(text= devices[0].device_name, secondary_text= "Current Reading: " + str(usage_over_time[3]) + "kWh")
+            item.bind(on_release=self.change_page)
+            self.mdlistid.add_widget(item)
+    def change_page(self,*args):
+        self.manager.current = 'page2'
+class Page2(Screen):
+    pass
+class SM(ScreenManager):
+    pass
+
+class MainApp(MDApp):
+    def build(self):
+        Builder.load_file('app.kv')
+        return SM()
+MainApp().run()
