@@ -23,10 +23,9 @@
             text: 'Predictions'
             BoxLayout:
                 orientation: 'vertical'
-                MDList:
-                    size_hint_y: .9
-                    OneLineListItem:
-                        text: 'Predictions go here!'
+                Button:
+                    text: 'Get Predictions'
+                    on_release: root.get_predictions()
         MDBottomNavigationItem:
             name: 'recommendations'
             text: 'Recommendations'

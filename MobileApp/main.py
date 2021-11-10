@@ -8,6 +8,9 @@ from decimal import Decimal
 from pyemvue import PyEmVue, device
 import datetime
 import asyncio
+import sys
+import os
+import paramiko
 from enum import Enum
 class Scale(Enum):
     SECOND = '1S'
@@ -47,6 +50,13 @@ class Page1(Screen):
             self.mdlistid.add_widget(item)
     def change_page(self,*args):
         self.manager.current = 'page2'
+    def get_predictions(self, *args):
+            client = paramiko.SSHClient()
+            client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            client.connect('127.0.0.1', username='mohad', password='Moh123123!')
+            stdout = client.exec_command('python C:/Users/mohad/SDP/hi.py')[1]
+            for line in stdout:
+                print (line)
 class Page2(Screen):
     pass
 class SM(ScreenManager):
